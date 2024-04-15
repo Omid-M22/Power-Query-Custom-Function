@@ -91,15 +91,18 @@ Tax Rates
 |:-- | :-- | :-- |
 | 0 | 30000 | 0 |
 | 30000 | 85000 | 10% |
-| 85000 | 10000000 | 20% |
+| 85000 | 100000 | 20% |
+| 100000 | .... | 20% |
+
 
 ```powerquery-m
-= Table.FromRows({{0,30000,0},{30000,85000,0.1},{85000,10000000,0.2}},
+= Table.FromRows({{0,30000,0},{30000,85000,0.1},{85000,100000,0.2},{100000,10000000,0.3}},
     {"From", "To", "Tax Rate"})
 ```
 
 
 Minerals Tax
+
 
 
 ### Define Custom Functions as a step of Query
@@ -124,8 +127,24 @@ Minerals Tax
  =Expression.Evaluate("List.Sum({1..6})",#shared)
 ```
 
+Save the below code in a text file namely Tax and save it in C:\Functions\
+```powerquery-m
+(income,optional tax_rate) => if  tax_rate=null then 0.1*income else income*tax_rate
+```
+
+Use the below code to extract this file and convert it to a function.
+```powerquery-m
+let
+    Source = Csv.Document(File.Contents("C:\Functions\TAX.txt"),[Delimiter="#(tab)"]),
+    Text = Source{0}[Column1],
+    Result =Expression.Evaluate(Text,#shared)
+in
+    Result
+```    
+
 
 [More Description](https://learn.microsoft.com/en-us/powerquery-m/expression-evaluate)
+
 
 
 
