@@ -68,13 +68,7 @@ Explicit return & parameter
 
 Vlookup
 
-
-```powerquery-m
-= Table.FromRows({{"S-081","David R",12500},{"S-210","John K",120000},{"S-006","Sara B",44500},{"S-012","Robin M",35100},{"S-510","BO X",27500},{"S-423","Xhang X",18000}},
-    {"Staff ID", "Name", "Income"})
-```
-
-    
+ 
 
 Staff Info
 | Staff ID | Name | Income |
@@ -85,6 +79,11 @@ Staff Info
 | S-012 | Robin M | 35100 |
 | S-510 | BO X | 27500 |
 | S-423 | Xhang X| 18000 |
+
+```powerquery-m
+= Table.FromRows({{"S-081","David R",12500},{"S-210","John K",120000},{"S-006","Sara B",44500},{"S-012","Robin M",35100},{"S-510","BO X",27500},{"S-423","Xhang X",18000}},
+    {"Staff ID", "Name", "Income"})
+```
 
 
 Tax Rates
