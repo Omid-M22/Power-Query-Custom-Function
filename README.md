@@ -1,13 +1,16 @@
 # Tips for Defining Custom Functions in Power Query
 
-Despite the wide variety of functions available in Power Query, sometimes it is necessary to define new custom functions for specific needs, especially in complex data cleansing processes. Such as request of calculation crolation between variables in the cleaning process of below challenge.
+Despite the wide variety of functions available in Power Query, sometimes it is necessary to define new custom functions for specific needs, especially in complex data cleansing processes. Such as lack of List.Larg, List.Small, Vlookup (Approximate Match), List.Corolation.
 
+Example:
 [Crolation of Respondants](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7182482203040256003-YKtZ?utm_source=share&utm_medium=member_desktop)
+[Vlookup](https://www.linkedin.com/posts/crispo-mwangi-6ab49453_excel-excelchallenge-crispexcel-activity-7180081447607672832-lTqu?utm_source=share&utm_medium=member_desktop)
+
 
 ## Agenda:
 ### Custom functions
+### Parameters & Output Type
 ### Optional Parameters
-### Parameters Type
 ### Recursive Functions
 ### Define Custom Functions as a step of Query
 ### Manage Custom funinctins
@@ -34,6 +37,19 @@ using space in thename of parameters
 (income,#"tax rate") => income*#"tax rate"
 ```
 
+## Parameters & output Type
+
+```powerquery-m
+= (a) =>Text.Start(a,3)
+```
+
+```powerquery-m
+= (a as text) =>Text.Start(a,3)
+```
+
+```powerquery-m
+= (a as text) as text =>Text.Start(a,3)
+```
 
 
 
