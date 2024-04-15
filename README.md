@@ -4,7 +4,7 @@ Despite the wide variety of functions available in Power Query, sometimes it is 
 
 
 ## Agenda:
-### Simple Custom functions
+### Custom functions
 ### Optional Parameters
 ### Parameters Type
 ### Recursive Functions
@@ -23,16 +23,30 @@ ___
 (income) => 0.1*income
 ```
 
-
-
 ```powerquery-m
 (income,tax_rate) => income*tax_rate
 ```
 
+```powerquery-m
+(income,#"tax rate") => income*#"tax rate"
+```
+
+## Optional Parameters
 
 ```powerquery-m
 (income,optional tax_rate) => if  tax_rate=null then 0.1*income else income*tax_rate
 ```
+
+Minerals Tax
+
+
+| From | To | Tax Rate |
+|:-- | :-- | :-- |
+| 0 | 30000 | 0 |
+| 30000 | 85000 | 10% |
+| 85000 | 10000000 | 20% |
+
+
 
 
 
