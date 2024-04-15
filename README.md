@@ -42,16 +42,16 @@ using space in thename of parameters
 
 Implicit parameter
 ```powerquery-m
-= (a) =>Text.Start(a,3)
+(a) =>Text.Start(a,3)
 ```
 
 Explicit parameter
 ```powerquery-m
-= (a as text) =>Text.Start(a,3)
+(a as text) =>Text.Start(a,3)
 ```
 Explicit return & parameter
 ```powerquery-m
-= (a as text) as text =>Text.Start(a,3)
+(a as text) as text =>Text.Start(a,3)
 ```
 
 
@@ -68,12 +68,36 @@ Explicit return & parameter
 
 Vlookup
 
+
+```powerquery-m
+= Table.FromRows({{"S-081","David R",12500},{"S-210","John K",120000},{"S-006","Sara B",44500},{"S-012","Robin M",35100},{"S-510","BO X",27500},{"S-423","Xhang X",18000}},
+    {"Staff ID", "Name", "Income"})
+```
+
+    
+
+Staff Info
+| Staff ID | Name | Income |
+|:-- | :-- | :-- |
+| S-081 | David R| 12500|
+| S-210 | John K| 120000 |
+| S-006 | Sara B | 44500 |
+| S-012 | Robin M | 35100 |
+| S-510 | BO X | 27500 |
+| S-423 | Xhang X| 18000 |
+
+
+Tax Rates
 | From | To | Tax Rate |
 |:-- | :-- | :-- |
 | 0 | 30000 | 0 |
 | 30000 | 85000 | 10% |
 | 85000 | 10000000 | 20% |
 
+```powerquery-m
+= Table.FromRows({{0,30000,0},{30000,85000,0.1},{85000,10000000,0.2}},
+    {"From", "To", "Tax Rate"})
+```
 
 
 Minerals Tax
@@ -88,9 +112,20 @@ Minerals Tax
 
 ### Manage Custom funinctins by Expression.Evaluate
 
+
 ```powerquery-m
-Expression.Evaluate("5+6")
+=Expression.Evaluate("5+6")
 ```
+
+```powerquery-m
+ =Expression.Evaluate("List.Sum({1..6})")
+```
+
+```powerquery-m
+ =Expression.Evaluate("List.Sum({1..6})",#shared)
+```
+
+
 [More Description](https://learn.microsoft.com/en-us/powerquery-m/expression-evaluate)
 
 
