@@ -107,6 +107,20 @@ Minerals Tax
 
 ### Define Custom Functions as a step of Query
 
+```powerquery-m
+let
+    Source = Table.FromRows({{"S-081","David R",12500},{"S-210","John K",120000},{"S-006","Sara B",44500},{"S-012","Robin M",35100},{"S-510","BO X",27500},{"S-423","Xhang X",18000}},
+    {"Staff ID", "Name", "Income"}),
+    Tax=(income) => 0.1*income,
+    Result=Table.AddColumn(Source,"Tax",each Tax(_[Income]))
+
+in
+    Result
+```
+
+(More Info)[https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7178873434918019072-8EHc?utm_source=share&utm_medium=member_desktop]
+    
+
 
 ### Recursive Functions
 
