@@ -8,16 +8,17 @@ Example:
 
 
 ## Agenda:
-### Custom functions
+### Basic Custom functions
 ### Parameters & Output Type
 ### Optional Parameters
-### Recursive Functions
+### Advanced Custom Functions
 ### Define Custom Functions as a step of Query
-### Manage Custom funinctins
+### Recursive Functions
+### Manage Custom funinctins by Expression.Evaluate
 ### Documentation in Custom Functions
 ___
 
-### Custom functions
+### Basic Custom functions
 Custome Function without any input parameter:
 ```powerquery-m
 () => "Hello, world"
@@ -39,14 +40,16 @@ using space in thename of parameters
 
 ## Parameters & output Type
 
+Implicit parameter
 ```powerquery-m
 = (a) =>Text.Start(a,3)
 ```
 
+Explicit parameter
 ```powerquery-m
 = (a as text) =>Text.Start(a,3)
 ```
-
+Explicit return & parameter
 ```powerquery-m
 = (a as text) as text =>Text.Start(a,3)
 ```
@@ -58,14 +61,37 @@ using space in thename of parameters
 (income,optional tax_rate) => if  tax_rate=null then 0.1*income else income*tax_rate
 ```
 
-Minerals Tax
 
+
+
+## Advanced Custom Functions
+
+Vlookup
 
 | From | To | Tax Rate |
 |:-- | :-- | :-- |
 | 0 | 30000 | 0 |
 | 30000 | 85000 | 10% |
 | 85000 | 10000000 | 20% |
+
+
+
+Minerals Tax
+
+
+### Define Custom Functions as a step of Query
+
+
+### Recursive Functions
+
+
+
+### Manage Custom funinctins by Expression.Evaluate
+
+```powerquery-m
+Expression.Evaluate("5+6")
+```
+[More Description](https://learn.microsoft.com/en-us/powerquery-m/expression-evaluate)
 
 
 
