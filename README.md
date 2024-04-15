@@ -118,7 +118,7 @@ in
     Result
 ```
 
-(More Info)[https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7178873434918019072-8EHc?utm_source=share&utm_medium=member_desktop]
+[More Info](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7178873434918019072-8EHc?utm_source=share&utm_medium=member_desktop)
     
 
 
@@ -162,5 +162,38 @@ in
 
 
 
+## Documentation in Custom Functions
 
 
+```powerquery-m
+let
+  Tax = (a) => a * 0.1, 
+  z   = [Documentation.Name = "This function can be used to calculate the tax value"]
+in
+  Value.ReplaceType(Tax, Value.ReplaceMetadata(Value.Type(Tax), z))
+```
+
+
+```powerquery-m
+=  Value.Type(List.Sum )
+```
+
+
+```powerquery-m
+= Value.Metadata( Value.Type(List.Sum) )
+```
+
+
+
+| Value | Detail | 
+| :--- | :--- |
+| Documentation.Name | Text to display across the top of the function invocation dialog, like "List.Sum" |
+| Documentation.Description |  General info about what function do like "Returns the sum of the items in the list."|
+| Documentation.LongDescription |  Description of what function do like "Returns the sum of the non-null values in the list, <code>list</code>. Returns null if there are no non-null values in the list."|
+|Documentation.Category	| cattegory of function like "List.Addition" |
+| Documentation.Examples |Example of function applications in the format of list of records with the filds of [Description, Code, Result] |
+
+
+
+
+(Formating the code)[https://www.powerqueryformatter.com/]
