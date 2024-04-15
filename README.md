@@ -168,7 +168,7 @@ in
 ```powerquery-m
 let
   Tax = (a) => a * 0.1, 
-  z   = [Documentation.Name = "This function can be used to calculate the tax value"]
+  z   = [Documentation.Description = "This function can be used to calculate the tax value"]
 in
   Value.ReplaceType(Tax, Value.ReplaceMetadata(Value.Type(Tax), z))
 ```
@@ -196,4 +196,15 @@ in
 
 
 
-(Formating the code)[https://www.powerqueryformatter.com/]
+= let
+  Tax = (a) => a * 0.1, 
+  z   = [Documentation.Name = "Tax",
+        Documentation.Description="This function can be used to calculate the tax value",
+        Documentation.LongDescription="In this function a fixed tax rate of 10% is used",
+        Documentation.Examples={[Description="Tax value for a person with income =500$", Code="Tax(500)", Result="50"],[Description="Tax value for a person with income =250$", Code="Tax(250)", Result="25"]}]
+in
+  Value.ReplaceType(Tax, Value.ReplaceMetadata(Value.Type(Tax), z))
+
+  
+
+[Formating the code](https://www.powerqueryformatter.com/)
