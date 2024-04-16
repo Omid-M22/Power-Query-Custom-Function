@@ -1,11 +1,13 @@
 # Tips for Defining Custom Functions in Power Query
 
-Despite the wide variety of functions available in Power Query, sometimes it is necessary to define new custom functions for specific needs, especially in complex data cleansing processes. Such as lack of List.Larg, List.Small, Vlookup (Approximate Match), List.Corolation.
+Despite the wide variety of functions available in Power Query, sometimes it is necessary to define new custom functions for specific needs, especially in complex data cleansing processes. Such as lack of List.Large, List.Small, Vlookup (Approximate Match), List.Corolation.
 
 Example:
 [Crolation of Respondants](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7182482203040256003-YKtZ?utm_source=share&utm_medium=member_desktop)
+
 [Vlookup](https://www.linkedin.com/posts/crispo-mwangi-6ab49453_excel-excelchallenge-crispexcel-activity-7180081447607672832-lTqu?utm_source=share&utm_medium=member_desktop)
 
+[Convert Number To Text](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7174524765414588416-YurR?utm_source=share&utm_medium=member_desktop)
 
 ## Agenda:
 ### Basic Custom functions
@@ -14,12 +16,12 @@ Example:
 ### Advanced Custom Functions
 ### Define Custom Functions as a step of Query
 ### Recursive Functions
-### Manage Custom funinctins by Expression.Evaluate
+### Manage Custom functions by Expression.Evaluate
 ### Documentation in Custom Functions
 ___
 
 ### Basic Custom functions
-Custome Function without any input parameter:
+Custom Function without any input parameter:
 ```powerquery-m
 () => "Hello, world"
 ```
@@ -33,7 +35,7 @@ Custom function with two input parameters:
 (income,tax_rate) => income*tax_rate
 ```
 
-using space in thename of parameters
+using space in the name of parameters
 ```powerquery-m
 (income,#"tax rate") => income*#"tax rate"
 ```
@@ -58,7 +60,7 @@ Explicit return & parameter
 
 ## Optional Parameters
 ```powerquery-m
-(income,optional tax_rate) => if  tax_rate=null then 0.1*income else income*tax_rate
+(income as number,optional tax_rate as number) as number => if  tax_rate=null then 0.1*income else income*tax_rate
 ```
 
 
@@ -70,7 +72,7 @@ Vlookup
 
  
 
-Staff Info
+Staff_Info
 | Staff ID | Name | Income |
 |:-- | :-- | :-- |
 | S-081 | David R| 12500|
@@ -86,7 +88,7 @@ Staff Info
 ```
 
 
-Tax Rates
+Tax_Rates
 | From | To | Tax Rate |
 |:-- | :-- | :-- |
 | 0 | 30000 | 0 |
@@ -98,6 +100,10 @@ Tax Rates
 ```powerquery-m
 = Table.FromRows({{0,30000,0},{30000,85000,0.1},{85000,100000,0.2},{100000,10000000,0.3}},
     {"From", "To", "Tax Rate"})
+```
+
+```powerquery-m
+(income,Tax)=> List.Last(Table.SelectRows(Tax, each [From] <= income)[Tax Rate])
 ```
 
 
@@ -126,13 +132,14 @@ in
 
 
 
-### Manage Custom funinctins by Expression.Evaluate
+### Manage Custom functions by Expression.Evaluate
 
 
 ```powerquery-m
 =Expression.Evaluate("5+6")
 ```
 
+Below code leads to error
 ```powerquery-m
  =Expression.Evaluate("List.Sum({1..6})")
 ```
@@ -195,7 +202,7 @@ in
 
 
 
-
+```powerquery-m
 = let
   Tax = (a) => a * 0.1, 
   z   = [Documentation.Name = "Tax",
@@ -204,7 +211,58 @@ in
         Documentation.Examples={[Description="Tax value for a person with income =500$", Code="Tax(500)", Result="50"],[Description="Tax value for a person with income =250$", Code="Tax(250)", Result="25"]}]
 in
   Value.ReplaceType(Tax, Value.ReplaceMetadata(Value.Type(Tax), z))
-
+```
   
 
 [Formating the code](https://www.powerqueryformatter.com/)
+
+
+
+
+#Advance Custom Function
+
+Custom function for converting number to text (Persian)
+```powerquery-m
+(B)=>
+let
+
+
+    S1 = {{"یک","دو","سه","چهار","پنج","شش","هفت","هشت","نه","ده","یازده","دوازده","سیزده","چهارده","پانزده","شانزده","هفتده","هجده","نانزده"},{"بیست","سی","چهل","پنجاه","شصت","هفتاد","هشتاد","نود"},{"صد","دویست","سیصد","چهارصد","پانصد","شش صد","هفت صد","هشت صد","نه صد"}},
+    S2={"هزار","میلیون","میلیارد"},
+
+    Z = List.Transform(List.Reverse(Text.ToList(Text.From(B))),Number.From),
+    Text1 = List.Transform(
+  List.Positions(Z), 
+  each (
+    try
+      
+        if Number.Mod(_ + 1, 3) = 0 then
+          S1{2}{Z{_} - 1}
+        else if Number.Mod(_ + 1, 3) = 1 then
+          (
+            if List.Count(Z) > _ + 1 then
+              (if Z{_ + 1} = 1 then S1{0}{Z{_} + 10 - 1} else S1{0}{Z{_} - 1})
+            else
+              S1{0}{Z{_} - 1}
+          )
+        else
+          (if Z{_} = 1 then "" else S1{1}{Z{_} - 2})
+    otherwise
+      ""
+  )    
+),
+
+
+Text2= List.Combine(List.Transform({{""},{" هزار"},{" میلیون"},{" میلیارد"}},each List.Repeat(_,3))),
+
+Text3=List.Transform(List.Positions(Text1), each if Text1{_}="" then "" else Text2{_}),
+Text=List.Transform(List.Positions(Text3), each if List.Count(List.Select(List.FirstN(Text3,_+1),(x)=>x=Text3{_}))>1 then Text1{_} else Text1{_}&Text3{_}),
+
+
+
+
+    Combine = Text.Clean(Text.Combine(List.Reverse(List.Select(Text,each _<>""))," و "))
+
+in
+    Combine
+    ```
