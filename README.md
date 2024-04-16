@@ -3,6 +3,7 @@
 Despite the wide variety of functions available in Power Query, sometimes it is necessary to define new custom functions for specific needs, especially in complex data cleansing processes. Such as lack of List.Large, List.Small, Vlookup (Approximate Match), List.Corolation.
 
 Example:
+
 [Crolation of Respondants](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7182482203040256003-YKtZ?utm_source=share&utm_medium=member_desktop)
 
 [Vlookup](https://www.linkedin.com/posts/crispo-mwangi-6ab49453_excel-excelchallenge-crispexcel-activity-7180081447607672832-lTqu?utm_source=share&utm_medium=member_desktop)
@@ -13,11 +14,12 @@ Example:
 ### Basic Custom functions
 ### Parameters & Output Type
 ### Optional Parameters
-### Advanced Custom Functions
+### VLOOKUP
 ### Define Custom Functions as a step of Query
 ### Recursive Functions
 ### Manage Custom functions by Expression.Evaluate
 ### Documentation in Custom Functions
+### Advanced Custom Functions
 ___
 
 ### Basic Custom functions
@@ -30,12 +32,17 @@ Custom function with an input parameter:
 ```powerquery-m
 (income) => 0.1*income
 ```
-Custom function with two input parameters: 
+or using each experision as below:
+```powerquery-m
+each 0.1*_
+```
+
+Custom function with two (more than one) input parameters: 
 ```powerquery-m
 (income,tax_rate) => income*tax_rate
 ```
 
-using space in the name of parameters
+Using space in the name of parameters:
 ```powerquery-m
 (income,#"tax rate") => income*#"tax rate"
 ```
@@ -60,15 +67,14 @@ Explicit return & parameter
 
 ## Optional Parameters
 ```powerquery-m
-(income as number,optional tax_rate as number) as number => if  tax_rate=null then 0.1*income else income*tax_rate
+(income as number, optional tax_rate as number) as number =>
+  if tax_rate = null then 0.1 * income else income * tax_rate
 ```
 
 
 
 
-## Advanced Custom Functions
-
-Vlookup
+## Vlookup
 
  
 
@@ -83,8 +89,17 @@ Staff_Info
 | S-423 | Xhang X| 18000 |
 
 ```powerquery-m
-= Table.FromRows({{"S-081","David R",12500},{"S-210","John K",120000},{"S-006","Sara B",44500},{"S-012","Robin M",35100},{"S-510","BO X",27500},{"S-423","Xhang X",18000}},
-    {"Staff ID", "Name", "Income"})
+=Table.FromRows(
+  {
+    {"S-081", "David R", 12500}, 
+    {"S-210", "John K", 120000}, 
+    {"S-006", "Sara B", 44500}, 
+    {"S-012", "Robin M", 35100}, 
+    {"S-510", "BO X", 27500}, 
+    {"S-423", "Xhang X", 18000}
+  }, 
+  {"Staff ID", "Name", "Income"}
+)
 ```
 
 
@@ -98,10 +113,13 @@ Tax_Rates
 
 
 ```powerquery-m
-= Table.FromRows({{0,30000,0},{30000,85000,0.1},{85000,100000,0.2},{100000,10000000,0.3}},
-    {"From", "To", "Tax Rate"})
+=Table.FromRows(
+  {{0, 30000, 0}, {30000, 85000, 0.1}, {85000, 100000, 0.2}, {100000, 10000000, 0.3}}, 
+  {"From", "To", "Tax Rate"}
+)
 ```
 
+To calculate the tax rate, based on the tabl, below function can be defined.
 ```powerquery-m
 (income,Tax)=> List.Last(Table.SelectRows(Tax, each [From] <= income)[Tax Rate])
 ```
@@ -115,20 +133,93 @@ Minerals Tax
 
 ```powerquery-m
 let
-    Source = Table.FromRows({{"S-081","David R",12500},{"S-210","John K",120000},{"S-006","Sara B",44500},{"S-012","Robin M",35100},{"S-510","BO X",27500},{"S-423","Xhang X",18000}},
-    {"Staff ID", "Name", "Income"}),
-    Tax=(income) => 0.1*income,
-    Result=Table.AddColumn(Source,"Tax",each Tax(_[Income]))
-
+  Source = Table.FromRows(
+    {
+      {"S-081", "David R", 12500}, 
+      {"S-210", "John K", 120000}, 
+      {"S-006", "Sara B", 44500}, 
+      {"S-012", "Robin M", 35100}, 
+      {"S-510", "BO X", 27500}, 
+      {"S-423", "Xhang X", 18000}
+    }, 
+    {"Staff ID", "Name", "Income"}
+  ), 
+  Tax = (income) => 0.1 * income, 
+  Result = Table.AddColumn(Source, "Tax", each Tax(_[Income]))
 in
-    Result
+  Result
 ```
+
+Deinfe multi line functins inside the steps of query
+```powerquery-m
+let
+  Source = Table.FromRows(
+    {
+      {"S-081", "David R", 12500}, 
+      {"S-210", "John K", 120000}, 
+      {"S-006", "Sara B", 44500}, 
+      {"S-012", "Robin M", 35100}, 
+      {"S-510", "BO X", 27500}, 
+      {"S-423", "Xhang X", 18000}
+    }, 
+    {"Staff ID", "Name", "Income"}
+  ), 
+  TaxFX = (income, Tax) =>
+    let
+      a = Table.SelectRows(Tax, each [From] <= income), 
+      b = a[Tax Rate], 
+      c = List.Last(b)
+    in
+      c, 
+  Result = Table.AddColumn(Source, "Tax", each TaxFX([Income], Tax_Rates) * [Income])
+in
+  Result
+```
+
+### Recursive Functions
+
+Find the next prime number
+
+first check a value is prime by the below IsPrime Function
+```powerquery-m
+(a) =>
+  let
+    List   = {1 .. Number.IntegerDivide(a, 2)}, 
+    Mode   = List.Transform(List, each Number.Mod(a, _)), 
+    Select = List.Select(Mode, each _ = 0), 
+    Count  = List.Count(Select) = 1
+  in
+    Count
+```
+
+then use the below recursive function to find the next prime number by the below function namely NextPrimeNumber
+```powerquery-m
+(a)=> if IsPrime(a) then a else NextPrimeNumber(a+1)
+```
+
+Both functions can be writien in a query as below:
+```powerquery-m
+(x) =>
+  let
+    IsPrime = (a) =>
+      let
+        List   = {1 .. Number.IntegerDivide(a, 2)}, 
+        Mode   = List.Transform(List, each Number.Mod(a, _)), 
+        Select = List.Select(Mode, each _ = 0), 
+        Count  = List.Count(Select) = 1
+      in
+        Count, 
+    b = if IsPrime(x) then x else NextPrimeNumber(x + 1)
+  in
+    b
+```
+
 
 [More Info](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7178873434918019072-8EHc?utm_source=share&utm_medium=member_desktop)
     
 
 
-### Recursive Functions
+
 
 
 
@@ -156,11 +247,11 @@ Save the below code in a text file namely Tax and save it in C:\Functions\
 Use the below code to extract this file and convert it to a function.
 ```powerquery-m
 let
-    Source = Csv.Document(File.Contents("C:\Functions\TAX.txt"),[Delimiter="#(tab)"]),
-    Text = Source{0}[Column1],
-    Result =Expression.Evaluate(Text,#shared)
+  Source = Csv.Document(File.Contents("C:\Functions\TAX.txt"), [Delimiter = "#(tab)"]), 
+  Text   = Source{0}[Column1], 
+  Result = Expression.Evaluate(Text, #shared)
 in
-    Result
+  Result
 ```    
 
 
@@ -203,12 +294,17 @@ in
 
 
 ```powerquery-m
-= let
+let
   Tax = (a) => a * 0.1, 
-  z   = [Documentation.Name = "Tax",
-        Documentation.Description="This function can be used to calculate the tax value",
-        Documentation.LongDescription="In this function a fixed tax rate of 10% is used",
-        Documentation.Examples={[Description="Tax value for a person with income =500$", Code="Tax(500)", Result="50"],[Description="Tax value for a person with income =250$", Code="Tax(250)", Result="25"]}]
+  z = [
+    Documentation.Name = "Tax", 
+    Documentation.Description = "This function can be used to calculate the tax value", 
+    Documentation.LongDescription = "In this function a fixed tax rate of 10% is used", 
+    Documentation.Examples = {
+      [Description = "Tax value for a person with income =500$", Code = "Tax(500)", Result = "50"], 
+      [Description = "Tax value for a person with income =250$", Code = "Tax(250)", Result = "25"]
+    }
+  ]
 in
   Value.ReplaceType(Tax, Value.ReplaceMetadata(Value.Type(Tax), z))
 ```
@@ -223,46 +319,68 @@ in
 
 Custom function for converting number to text (Persian)
 ```powerquery-m
-(B)=>
-let
-
-
-    S1 = {{"یک","دو","سه","چهار","پنج","شش","هفت","هشت","نه","ده","یازده","دوازده","سیزده","چهارده","پانزده","شانزده","هفتده","هجده","نانزده"},{"بیست","سی","چهل","پنجاه","شصت","هفتاد","هشتاد","نود"},{"صد","دویست","سیصد","چهارصد","پانصد","شش صد","هفت صد","هشت صد","نه صد"}},
-    S2={"هزار","میلیون","میلیارد"},
-
-    Z = List.Transform(List.Reverse(Text.ToList(Text.From(B))),Number.From),
+(B) =>
+  let
+    S1 = {
+      {
+        "یک", 
+        "دو", 
+        "سه", 
+        "چهار", 
+        "پنج", 
+        "شش", 
+        "هفت", 
+        "هشت", 
+        "نه", 
+        "ده", 
+        "یازده", 
+        "دوازده", 
+        "سیزده", 
+        "چهارده", 
+        "پانزده", 
+        "شانزده", 
+        "هفتده", 
+        "هجده", 
+        "نانزده"
+      }, 
+      {"بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود"}, 
+      {"صد", "دویست", "سیصد", "چهارصد", "پانصد", "شش صد", "هفت صد", "هشت صد", "نه صد"}
+    }, 
+    S2 = {"هزار", "میلیون", "میلیارد"}, 
+    Z = List.Transform(List.Reverse(Text.ToList(Text.From(B))), Number.From), 
     Text1 = List.Transform(
-  List.Positions(Z), 
-  each (
-    try
-      
-        if Number.Mod(_ + 1, 3) = 0 then
-          S1{2}{Z{_} - 1}
-        else if Number.Mod(_ + 1, 3) = 1 then
-          (
-            if List.Count(Z) > _ + 1 then
-              (if Z{_ + 1} = 1 then S1{0}{Z{_} + 10 - 1} else S1{0}{Z{_} - 1})
+      List.Positions(Z), 
+      each (
+        try
+          
+            if Number.Mod(_ + 1, 3) = 0 then
+              S1{2}{Z{_} - 1}
+            else if Number.Mod(_ + 1, 3) = 1 then
+              (
+                if List.Count(Z) > _ + 1 then
+                  (if Z{_ + 1} = 1 then S1{0}{Z{_} + 10 - 1} else S1{0}{Z{_} - 1})
+                else
+                  S1{0}{Z{_} - 1}
+              )
             else
-              S1{0}{Z{_} - 1}
-          )
+              (if Z{_} = 1 then "" else S1{1}{Z{_} - 2})
+        otherwise
+          ""
+      )
+    ), 
+    Text2 = List.Combine(
+      List.Transform({{""}, {" هزار"}, {" میلیون"}, {" میلیارد"}}, each List.Repeat(_, 3))
+    ), 
+    Text3 = List.Transform(List.Positions(Text1), each if Text1{_} = "" then "" else Text2{_}), 
+    Text = List.Transform(
+      List.Positions(Text3), 
+      each 
+        if List.Count(List.Select(List.FirstN(Text3, _ + 1), (x) => x = Text3{_})) > 1 then
+          Text1{_}
         else
-          (if Z{_} = 1 then "" else S1{1}{Z{_} - 2})
-    otherwise
-      ""
-  )    
-),
-
-
-Text2= List.Combine(List.Transform({{""},{" هزار"},{" میلیون"},{" میلیارد"}},each List.Repeat(_,3))),
-
-Text3=List.Transform(List.Positions(Text1), each if Text1{_}="" then "" else Text2{_}),
-Text=List.Transform(List.Positions(Text3), each if List.Count(List.Select(List.FirstN(Text3,_+1),(x)=>x=Text3{_}))>1 then Text1{_} else Text1{_}&Text3{_}),
-
-
-
-
-    Combine = Text.Clean(Text.Combine(List.Reverse(List.Select(Text,each _<>""))," و "))
-
-in
+          Text1{_} & Text3{_}
+    ), 
+    Combine = Text.Clean(Text.Combine(List.Reverse(List.Select(Text, each _ <> "")), " و "))
+  in
     Combine
     ```
