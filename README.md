@@ -11,10 +11,12 @@ Example:
 [Convert Number To Text](https://www.linkedin.com/posts/omid-motamedisedeh-74aba166_excelchallenge-powerquerychllenge-excel-activity-7174524765414588416-YurR?utm_source=share&utm_medium=member_desktop)
 
 You need to define new function in some functions like List.Generate
+
 [List.Generate](https://learn.microsoft.com/en-us/powerquery-m/list-generate)
 
 
 ## Agenda:
+
 ### Basic Custom functions
 ### Parameters & Output Type
 ### Optional Parameters
