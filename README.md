@@ -1,5 +1,20 @@
 # Tips for Defining Custom Functions in Power Query
 
+## Agenda:
+
+### Why we need Customo Functions
+### Basic Custom functions
+### Parameters & Output Type
+### Optional Parameters
+### VLOOKUP
+### Define Custom Functions as a step of Query
+### Recursive Functions
+### Manage Custom functions by Expression.Evaluate
+### Documentation in Custom Functions
+### Advanced Custom Functions
+___
+
+### Why we need Customo Functions
 Despite the wide variety of functions available in Power Query, sometimes it is necessary to define new custom functions for specific needs, especially in complex data cleansing processes. Such as lack of List.Large, List.Small, Vlookup (Approximate Match), List.Corolation.
 
 Example:
@@ -15,18 +30,6 @@ You need to define new function in some functions like List.Generate
 [List.Generate](https://learn.microsoft.com/en-us/powerquery-m/list-generate)
 
 
-## Agenda:
-
-### Basic Custom functions
-### Parameters & Output Type
-### Optional Parameters
-### VLOOKUP
-### Define Custom Functions as a step of Query
-### Recursive Functions
-### Manage Custom functions by Expression.Evaluate
-### Documentation in Custom Functions
-### Advanced Custom Functions
-___
 
 ### Basic Custom functions
 Custom Function without any input parameter:
